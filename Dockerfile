@@ -264,6 +264,8 @@ RUN  set -xe; \
         /usr/local/modsecurity \
         /var/cache/apk/* ;
 
+COPY content/index.html /var/www/html/index.html
+
 USER joesmith
 
 
