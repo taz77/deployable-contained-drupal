@@ -262,7 +262,84 @@ RUN  set -xe; \
     rm -rf \
         /tmp/* \
         /usr/local/modsecurity \
-        /var/cache/apk/* ;
+        /var/cache/apk/* ; \
+    # Begin PHP installation.
+    apk add --update --no-cache -t .wodby-php-run-deps \
+        c-client=2007f-r11 \
+        fcgi \
+        findutils \
+        freetype=2.10.1-r0 \
+        git \
+        gmp=6.1.2-r1 \
+        icu-libs=64.2-r0 \
+        imagemagick=7.0.9.7-r0 \
+        jpegoptim=1.4.6-r0 \
+        less \
+        libbz2=1.0.8-r1 \
+        libevent=2.1.11-r0 \
+        libjpeg-turbo=2.0.4-r0 \
+        libjpeg-turbo-utils \
+        libldap=2.4.48-r1 \
+        libltdl=2.4.6-r7 \
+        libmemcached-libs=1.0.18-r4 \
+        libmcrypt=2.5.8-r7 \
+        libpng=1.6.37-r1 \
+        librdkafka=1.2.2-r0 \
+        libuuid=2.34-r1 \
+        libwebp=1.0.3-r0 \
+        libxslt=1.1.34-r0 \
+        libzip=1.5.2-r0 \
+        make \
+        mariadb-client \
+        nano \
+        openssh \
+        openssh-client \
+        patch \
+	    pngquant \
+        postgresql-client \
+        rabbitmq-c=0.10.0-r0 \
+        rsync \
+        su-exec \
+        sudo \
+        tidyhtml-libs=5.6.0-r0 \
+        # todo: move out tig and tmux to -dev version.
+        tig \
+        tmux \
+        yaml=0.2.2-r1; \
+    \
+    apk add --update --no-cache -t .wodby-php-build-deps \
+        autoconf \
+        cmake \
+        build-base \
+        bzip2-dev \
+        freetype-dev \
+        gmp-dev \
+        icu-dev \
+        imagemagick-dev \
+        imap-dev \
+        jpeg-dev \
+        krb5-dev \
+        libevent-dev \
+        libgcrypt-dev \
+        libjpeg-turbo-dev \
+        libmemcached-dev \
+        libmcrypt-dev \
+        libpng-dev \
+        librdkafka-dev \
+        libtool \
+        libwebp-dev \
+        libxslt-dev \
+        libzip-dev \
+        openldap-dev \
+        openssl-dev \
+        pcre-dev \
+        postgresql-dev \
+        rabbitmq-c-dev \
+        tidyhtml-dev \
+        yaml-dev; \
+    \
+    apk add -U --no-cache -t .wodby-php-edge-run-deps -X ${APK_EDGE} \
+        gnu-libiconv=1.15-r2;
 
 COPY content/index.html /var/www/html/index.html
 
