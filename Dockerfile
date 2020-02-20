@@ -136,6 +136,8 @@ RUN  set -xe; \
     mv crs-setup.conf.example /etc/nginx/modsecurity/crs/setup.conf; \
     mv rules /etc/nginx/modsecurity/crs; \
     \
+    # Pagespeed is not compatible with the latest release of Alpine and Alpine is still not officially supported. Follow
+    # this issue for updates: https://github.com/apache/incubator-pagespeed-ngx/issues/1181
     # Get ngx pagespeed module.
     # git clone -b "v${ngx_pagespeed_ver}-stable" \
     #       --recurse-submodules \
@@ -146,7 +148,7 @@ RUN  set -xe; \
     #       https://github.com/apache/incubator-pagespeed-ngx.git \
     #       /tmp/ngx_pagespeed; \
     \
-    # Get psol for alpine.
+    # This PSOL from Wodby was compiled with Alpine 3.8 and will not load on Alpine 3.11.
     # url="https://github.com/wodby/nginx-alpine-psol/releases/download/${mod_pagespeed_ver}/psol.tar.gz"; \
     # wget -qO- "${url}" | tar xz -C /tmp/ngx_pagespeed; \
     \
