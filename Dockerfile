@@ -1,21 +1,30 @@
 ARG ALPINE_VER=3.11
 ARG NGINX_VER=1.17.8
+ARG APK_MAIN=http://dl-cdn.alpinelinux.org/alpine/v3.11/main
+ARG APK_COMMUNITY=http://dl-cdn.alpinelinux.org/alpine/v3.11/community
+ARG APK_EDGE=http://dl-3.alpinelinux.org/alpine/edge
 
 FROM alpine:${ALPINE_VER}
 ARG ALPINE_DEV
 ARG NGINX_VER
+ARG APK_MAIN
+ARG APK_COMMUNITY
+ARG APK_EDGE
 
 ENV NGINX_VER=${NGINX_VER} \
     APP_ROOT="/var/www/html" \
     FILES_DIR="/mnt/files" \
-    NGINX_VHOST_PRESET="html"
+    NGINX_VHOST_PRESET="html" \
+    APK_MAIN=${APK_MAIN} \
+    APK_COMMUNITY=${APK_COMMUNITY} \
+    APK_EDGE=${APK_EDGE}
 
 COPY bin /usr/local/bin
 COPY templates /etc/gotpl/
 COPY docker-entrypoint.sh /
 
-RUN echo "http://cache.dev.ruinix.com/repository/apk-311-main/" > /etc/apk/repositories; \
-    echo "http://cache.dev.ruinix.com/repository/apk-311-community/" >> /etc/apk/repositories;
+RUN echo $APK_MAIN > /etc/apk/repositories; \
+    echo $APK_COMMUNITY >> /etc/apk/repositories;
     
 RUN  set -xe; \
      apk add --update --no-cache \
@@ -92,7 +101,7 @@ RUN  set -xe; \
         yajl-dev; \
     \
     # @todo download from main repo when updated to alpine 3.10.
-    apk add -U --no-cache -t .nginx-edge-build-deps -X http://cache.dev.ruinix.com/repository/apk-edge-community/ brotli-dev; \
+    apk add -U --no-cache -t .nginx-edge-build-deps -X ${APK_EDGE} brotli-dev; \
     # Modsecurity lib.
     cd /tmp; \
     git clone --depth 1 -b "v${modsecurity_ver}" --single-branch https://github.com/SpiderLabs/ModSecurity; \
