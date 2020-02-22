@@ -3,6 +3,8 @@ ARG NGINX_VER=1.17.8
 ARG APK_MAIN=http://dl-cdn.alpinelinux.org/alpine/v3.11/main
 ARG APK_COMMUNITY=http://dl-cdn.alpinelinux.org/alpine/v3.11/community
 ARG APK_EDGE=http://dl-3.alpinelinux.org/alpine/edge
+ARG PHP_URL=https://www.php.net/get/php-7.4.3.tar.xz/from/this/mirror
+ARG PHP_ASC_URL=https://www.php.net/get/php-7.4.3.tar.xz.asc/from/this/mirror
 
 FROM alpine:${ALPINE_VER}
 ARG ALPINE_DEV
@@ -10,6 +12,8 @@ ARG NGINX_VER
 ARG APK_MAIN
 ARG APK_COMMUNITY
 ARG APK_EDGE
+ARG PHP_URL
+ARG PHP_ASC_URL
 
 ENV NGINX_VER=${NGINX_VER} \
     APP_ROOT="/var/www/html" \
@@ -17,7 +21,9 @@ ENV NGINX_VER=${NGINX_VER} \
     NGINX_VHOST_PRESET="html" \
     APK_MAIN=${APK_MAIN} \
     APK_COMMUNITY=${APK_COMMUNITY} \
-    APK_EDGE=${APK_EDGE}
+    APK_EDGE=${APK_EDGE} \
+    PHP_URL=${PHP_URL} \
+    PHP_ASC_URL=${PHP_ASC_URL}
 
 COPY bin /usr/local/bin
 COPY templates /etc/gotpl/
