@@ -281,7 +281,9 @@ RUN  set -xe; \
         /tmp/* \
         /usr/local/modsecurity \
         /var/cache/apk/* ; \
-    # Begin PHP installation.
+    ############################
+    # Begin PHP installation.  #
+    ############################
     apk add --update --no-cache -t .depdrup-php-run-deps \
         c-client=2007f-r11 \
         fcgi \
@@ -508,9 +510,11 @@ RUN set -eux; \
 COPY content/index.html /var/www/html/index.html
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
+
+COPY content/index.html /var/www/html/index.html
+COPY docker-php-ext-* /usr/local/bin/
+
 USER joesmith
-
-
 
 WORKDIR $APP_ROOT
 EXPOSE 80
