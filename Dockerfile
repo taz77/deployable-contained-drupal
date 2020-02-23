@@ -44,7 +44,7 @@ RUN echo $APK_MAIN > /etc/apk/repositories; \
     echo $APK_COMMUNITY >> /etc/apk/repositories;
     
 RUN  set -xe; \
-     apk add --update --no-cache \
+     apk add --update --no-cache -t .tools\
         bash \
         ca-certificates \
         curl \
@@ -54,7 +54,12 @@ RUN  set -xe; \
         wget \
         xz \
         openssl \
-        libuuid; \
+        libuuid \
+        findutils \
+        make \
+        nghttp2 \
+        sudo; \
+    \
     \
     if [ -n "${ALPINE_DEV}" ]; then \
         apk add --update git coreutils jq sed gawk grep gnupg; \
@@ -77,12 +82,6 @@ RUN  set -xe; \
 	adduser -u 1000 -D -S -s /bin/bash -G joesmith joesmith; \
 	sed -i '/^joesmith/s/!/*/' /etc/shadow; \
 	echo "PS1='\w\$ '" >> /home/joesmith/.bashrc; \
-    \
-    apk add --update --no-cache -t .tools \
-        findutils \
-        make \
-        nghttp2 \
-        sudo; \
     \
     apk add --update --no-cache -t .nginx-build-deps \
         apr-dev \
