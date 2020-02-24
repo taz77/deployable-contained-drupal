@@ -507,8 +507,6 @@ RUN set -eux; \
 
 
 
-COPY content/index.html /var/www/html/index.html
-COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
 
 
 COPY content/index.html /var/www/html/index.html
@@ -518,6 +516,8 @@ USER joesmith
 
 WORKDIR $APP_ROOT
 EXPOSE 80
+STOPSIGNAL SIGQUIT
+EXPOSE 9000
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["sudo", "nginx"]
