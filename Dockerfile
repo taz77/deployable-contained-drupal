@@ -15,6 +15,14 @@ ARG APK_EDGE
 ARG PHP_URL
 ARG PHP_ASC_URL
 
+# Apply stack smash protection to functions using local buffers and alloca()
+# Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
+# Enable optimization (-O2)
+# Enable linker optimization (this sorts the hash buckets to improve cache locality, and is non-default)
+# Adds GNU HASH segments to generated executables (this is used if present, and is much faster than sysv hash; in this configuration, sysv hash is also generated)
+# https://github.com/docker-library/php/issues/272
+# -D_LARGEFILE_SOURCE and -D_FILE_OFFSET_BITS=64 (https://www.php.net/manual/en/intro.filesystem.php)
+
 ENV NGINX_VER=${NGINX_VER} \
     APP_ROOT="/var/www/html" \
     FILES_DIR="/mnt/files" \
@@ -24,7 +32,15 @@ ENV NGINX_VER=${NGINX_VER} \
     APK_EDGE=${APK_EDGE} \
     PHP_URL=${PHP_URL} \
     PHP_ASC_URL=${PHP_ASC_URL} \
-    PHP_INI_DIR=/usr/local/etc/php
+    PHP_INI_DIR=/usr/local/etc/php \
+    PHP_VERSION=7.4.3 \
+    PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" \
+    PHP_CPPFLAGS="$PHP_CFLAGS" \
+    PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
+    PHP_SHA256="cf1f856d877c268124ded1ede40c9fb6142b125fdaafdc54f855120b8bc6982a" \
+    PHP_MD5="" \
+    PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi" \
+    GPG_KEYS="42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312"
 
 ENV PHPIZE_DEPS \
 		autoconf \
@@ -37,27 +53,11 @@ ENV PHPIZE_DEPS \
 		pkgconf \
 		re2c
 
-ENV PHP_EXTRA_CONFIGURE_ARGS --enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi
-
-# Apply stack smash protection to functions using local buffers and alloca()
-# Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
-# Enable optimization (-O2)
-# Enable linker optimization (this sorts the hash buckets to improve cache locality, and is non-default)
-# Adds GNU HASH segments to generated executables (this is used if present, and is much faster than sysv hash; in this configuration, sysv hash is also generated)
-# https://github.com/docker-library/php/issues/272
-# -D_LARGEFILE_SOURCE and -D_FILE_OFFSET_BITS=64 (https://www.php.net/manual/en/intro.filesystem.php)
-ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" \
-    PHP_CPPFLAGS="$PHP_CFLAGS" \
-    PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
-    PHP_SHA256="cf1f856d877c268124ded1ede40c9fb6142b125fdaafdc54f855120b8bc6982a" \
-    PHP_MD5=""
-
-ENV GPG_KEYS 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-ENV PHP_VERSION 7.4.3
-
 COPY bin /usr/local/bin
 COPY templates /etc/gotpl/
 COPY docker-entrypoint.sh startup_wrapper.sh /
+COPY docker-php-source /usr/local/bin/
+COPY docker-php-ext-* /usr/local/bin/
     
 RUN  echo $APK_MAIN > /etc/apk/repositories; \
      echo $APK_COMMUNITY >> /etc/apk/repositories; \
@@ -381,17 +381,11 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 
 
 RUN set -eux; \
-	addgroup -g 82 -S www-data; \
+    addgroup -g 82 -S www-data; \
 	adduser -u 82 -D -S -G www-data www-data; \
 	mkdir -p "$PHP_INI_DIR/conf.d";  \
     chown www-data:www-data /var/www/html; \
-	chmod 777 /var/www/html
-
-
-
-COPY docker-php-source /usr/local/bin/
-
-RUN set -eux; \
+	chmod 777 /var/www/html; \
 	\
 	apk add --no-cache --virtual .fetch-deps gnupg; \
 	\
@@ -510,7 +504,7 @@ RUN set -eux; \
 
 
 COPY content/index.html /var/www/html/index.html
-COPY docker-php-ext-* /usr/local/bin/
+
 
 RUN docker-php-ext-enable sodium; \
     set -eux; \
