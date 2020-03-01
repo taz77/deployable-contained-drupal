@@ -545,6 +545,7 @@ WORKDIR $APP_ROOT
 EXPOSE 80
 STOPSIGNAL SIGQUIT
 EXPOSE 9000
+VOLUME [ "/var/www/html" ]
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/startup_wrapper.sh"]
