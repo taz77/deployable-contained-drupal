@@ -376,11 +376,8 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
         postgresql-dev \
         rabbitmq-c-dev \
         tidyhtml-dev \
-        yaml-dev;
-
-
-
-RUN set -eux; \
+        yaml-dev; \
+        \
     addgroup -g 82 -S www-data; \
 	adduser -u 82 -D -S -G www-data www-data; \
 	mkdir -p "$PHP_INI_DIR/conf.d";  \
