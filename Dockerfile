@@ -500,13 +500,8 @@ RUN set -eux; \
 	pecl update-channels; \
 	rm -rf /tmp/pear ~/.pearrc; \
 # smoke test
-	php --version;
-
-
-COPY content/index.html content/index.php /var/www/html/
-
-RUN docker-php-ext-enable sodium; \
-    set -eux; \
+	php --version; \
+    docker-php-ext-enable sodium; \
 	cd /usr/local/etc; \
 	if [ -d php-fpm.d ]; then \
 		# for some reason, upstream's php-fpm.conf.default has "include=NONE/etc/php-fpm.d/*.conf"
@@ -544,6 +539,8 @@ RUN docker-php-ext-enable sodium; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf
 
+
+COPY content/index.html content/index.php /var/www/html/
 
 USER joesmith
 
