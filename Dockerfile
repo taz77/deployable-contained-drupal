@@ -500,11 +500,10 @@ RUN set -eux; \
 	pecl update-channels; \
 	rm -rf /tmp/pear ~/.pearrc; \
 # smoke test
-	php --version
+	php --version;
 
 
-COPY content/index.html /var/www/html/index.html
-
+COPY content/index.html content/index.php /var/www/html/
 
 RUN docker-php-ext-enable sodium; \
     set -eux; \
