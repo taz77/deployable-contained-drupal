@@ -2,7 +2,6 @@ ARG ALPINE_VER=3.11
 ARG NGINX_VER=1.17.8
 ARG APK_MAIN=http://dl-cdn.alpinelinux.org/alpine/v3.11/main
 ARG APK_COMMUNITY=http://dl-cdn.alpinelinux.org/alpine/v3.11/community
-ARG APK_EDGE=http://dl-3.alpinelinux.org/alpine/edge
 ARG PHP_URL=https://www.php.net/get/php-7.4.3.tar.xz/from/this/mirror
 ARG PHP_ASC_URL=https://www.php.net/get/php-7.4.3.tar.xz.asc/from/this/mirror
 
@@ -11,7 +10,6 @@ ARG ALPINE_DEV
 ARG NGINX_VER
 ARG APK_MAIN
 ARG APK_COMMUNITY
-ARG APK_EDGE
 ARG PHP_URL
 ARG PHP_ASC_URL
 
@@ -29,7 +27,6 @@ ENV NGINX_VER=${NGINX_VER} \
     NGINX_VHOST_PRESET="html" \
     APK_MAIN=${APK_MAIN} \
     APK_COMMUNITY=${APK_COMMUNITY} \
-    APK_EDGE=${APK_EDGE} \
     PHP_URL=${PHP_URL} \
     PHP_ASC_URL=${PHP_ASC_URL} \
     PHP_INI_DIR=/usr/local/etc/php \
@@ -124,10 +121,9 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
         rsync \
         sed \
         yajl \
-        yajl-dev; \
+        yajl-dev \
+        brotli-dev; \
     \
-    # @todo download from main repo when updated to alpine 3.10.
-    apk add -U --no-cache -t .nginx-edge-build-deps -X ${APK_EDGE} brotli-dev; \
     # Modsecurity lib.
     cd /tmp; \
     git clone --depth 1 -b "v${modsecurity_ver}" --single-branch https://github.com/SpiderLabs/ModSecurity; \
@@ -286,7 +282,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
     \
     chown joesmith:joesmith /usr/share/nginx/html/50x.html; \
     \
-    apk del --purge .nginx-build-deps .nginx-edge-build-deps .libmodsecurity-build-deps; \
+    apk del --purge .nginx-build-deps .libmodsecurity-build-deps; \
     rm -rf \
         /tmp/* \
         /usr/local/modsecurity \
