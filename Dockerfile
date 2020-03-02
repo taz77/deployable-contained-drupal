@@ -77,7 +77,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
     ngx_pagespeed_ver="1.13.35.2"; \
     mod_pagespeed_ver="1.13.35.2"; \
     ngx_modsecurity_ver="1.0.0"; \
-    modsecurity_ver="3.0.3"; \
+    modsecurity_ver="3.0.4"; \
     owasp_crs_ver="3.1.0"; \
     \
     addgroup -S nginx; \
