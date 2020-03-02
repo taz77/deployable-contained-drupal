@@ -76,9 +76,9 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
     nginx_up_ver="0.9.1"; \
     ngx_pagespeed_ver="1.13.35.2"; \
     mod_pagespeed_ver="1.13.35.2"; \
-    ngx_modsecurity_ver="1.0.0"; \
+    ngx_modsecurity_ver="1.0.1"; \
     modsecurity_ver="3.0.4"; \
-    owasp_crs_ver="3.1.0"; \
+    owasp_crs_ver="3.2.0"; \
     \
     addgroup -S nginx; \
     adduser -S -D -H -h /var/cache/nginx -s /sbin/nologin -G nginx nginx; \
