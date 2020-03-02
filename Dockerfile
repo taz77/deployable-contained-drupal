@@ -248,11 +248,11 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
     touch /etc/nginx/upstream.conf; \
     chown -R joesmith:joesmith /etc/nginx; \
     \
-    install -g nginx -o nginx -d \
-        /var/cache/ngx_pagespeed \
-        /pagespeed_static \
-        /ngx_pagespeed_beacon; \
-    \
+    # install -g nginx -o nginx -d \
+    #     /var/cache/ngx_pagespeed \
+    #     /pagespeed_static \
+    #     /ngx_pagespeed_beacon; \
+    # \
     install -m 400 -d /etc/nginx/pki; \
     strip /usr/sbin/nginx*; \
     strip /usr/lib/nginx/modules/*.so; \
