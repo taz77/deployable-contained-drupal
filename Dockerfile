@@ -520,7 +520,10 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 		echo; \
 		echo '[www]'; \
 		echo 'listen = 9000'; \
-	} | tee php-fpm.d/zz-docker.conf
+	} | tee php-fpm.d/zz-docker.conf; \
+    { \
+        echo "expose_php = off"; \
+    } | tee php-fpm.d/zz-expose.conf;
 
 
 COPY content/index.html content/index.php /var/www/html/
