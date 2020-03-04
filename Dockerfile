@@ -4,6 +4,7 @@ ARG APK_MAIN=http://dl-cdn.alpinelinux.org/alpine/v3.11/main
 ARG APK_COMMUNITY=http://dl-cdn.alpinelinux.org/alpine/v3.11/community
 ARG PHP_URL=https://www.php.net/get/php-7.4.3.tar.xz/from/this/mirror
 ARG PHP_ASC_URL=https://www.php.net/get/php-7.4.3.tar.xz.asc/from/this/mirror
+ARG PHP_VER=7.4.3
 
 FROM alpine:${ALPINE_VER}
 ARG ALPINE_DEV
@@ -12,6 +13,7 @@ ARG APK_MAIN
 ARG APK_COMMUNITY
 ARG PHP_URL
 ARG PHP_ASC_URL
+ARG PHP_VER
 
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
@@ -38,7 +40,8 @@ ENV NGINX_VER=${NGINX_VER} \
     PHP_MD5="" \
     PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi" \
     GPG_KEYS="42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312" \
-    PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c"
+    PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c" \
+    PHP_VERSION=${PHP_VER}
 
 COPY bin /usr/local/bin
 COPY templates /etc/gotpl/
@@ -521,9 +524,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 		echo '[www]'; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf; \
-    { \
-        echo "expose_php = off"; \
-    } | tee php-fpm.d/zz-expose.conf;
+    chown -R joesmith:joesmith /usr/local/etc/php;
 
 
 COPY content/index.html content/index.php /var/www/html/
