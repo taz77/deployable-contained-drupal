@@ -34,6 +34,7 @@ _backwards_compatibility() {
 }
 
 process_templates() {
+    local php_ver_minor="${PHP_VERSION:0:3}"
     _backwards_compatibility
 
     _gotpl "nginx.conf.tmpl" "/etc/nginx/nginx.conf"
@@ -49,6 +50,12 @@ process_templates() {
     _gotpl "includes/upstream.php.conf.tmpl" "/etc/nginx/upstream.conf"
 
     _gotpl "50x.html.tmpl" "/usr/share/nginx/html/50x.html"
+
+
+    _gotpl "docker-php-${php_ver_minor}.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php.ini"
+    _gotpl "docker-php-ext-apcu.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"
+    _gotpl "docker-php-ext-igbinary.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php-ext-igbinary.ini"
+    _gotpl "docker-php-ext-opcache.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php-ext-opcache.ini"
 }
 
 sudo init_volumes
