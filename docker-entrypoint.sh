@@ -56,6 +56,7 @@ process_templates() {
     _gotpl "docker-php-ext-apcu.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php-ext-apcu.ini"
     _gotpl "docker-php-ext-igbinary.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php-ext-igbinary.ini"
     _gotpl "docker-php-ext-opcache.ini.tmpl" "${PHP_INI_DIR}/conf.d/docker-php-ext-opcache.ini"
+    _gotpl "zz-www.conf.tmpl" "/usr/local/etc/php-fpm.d/zz-www.conf"
 }
 
 sudo init_volumes
