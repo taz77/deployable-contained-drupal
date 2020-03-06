@@ -524,7 +524,8 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 		echo '[www]'; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf; \
-    chown -R joesmith:joesmith /usr/local/etc/php;
+    chown -R joesmith:joesmith ${PHP_INI_DIR}; \
+    chown -R joesmith:joesmith /usr/local/etc/php-fpm.d; \
 
 
 COPY content/index.html content/index.php /var/www/html/
