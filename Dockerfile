@@ -5,6 +5,9 @@ ARG APK_COMMUNITY=http://dl-cdn.alpinelinux.org/alpine/v3.11/community
 ARG PHP_URL=https://www.php.net/get/php-7.4.3.tar.xz/from/this/mirror
 ARG PHP_ASC_URL=https://www.php.net/get/php-7.4.3.tar.xz.asc/from/this/mirror
 ARG PHP_VER=7.4.3
+ARG INSTALL_DRUPAL=0
+ARG DRUPAL_REF=8.8.2
+ARG DRUPAL_GIT=https://git.drupalcode.org/project/drupal.git
 
 FROM alpine:${ALPINE_VER}
 ARG ALPINE_DEV
@@ -14,6 +17,9 @@ ARG APK_COMMUNITY
 ARG PHP_URL
 ARG PHP_ASC_URL
 ARG PHP_VER
+ARG DRUPAL_REF
+ARG DRUPAL_GIT
+ARG INSTALL_DRUPAL
 
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
@@ -41,7 +47,8 @@ ENV NGINX_VER=${NGINX_VER} \
     PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi" \
     GPG_KEYS="42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312" \
     PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c" \
-    PHP_VERSION=${PHP_VER}
+    PHP_VERSION=${PHP_VER} \
+    INSTALL_DRUPAL=${INSTALL_DRUPAL}
 
 COPY bin /usr/local/bin
 COPY templates /etc/gotpl/
@@ -526,9 +533,24 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 	} | tee php-fpm.d/zz-docker.conf; \
     chown -R joesmith:joesmith ${PHP_INI_DIR}; \
     chown -R joesmith:joesmith /usr/local/etc/php-fpm.d; \
+    ############################
+    #      Drupal Config       #
+    ############################
 
-
-COPY content/index.html content/index.php /var/www/html/
+	if [ -n "$INSTALL_DRUPAL" ]; then \
+		cd /var/www; \
+        git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} drupal; \
+        rm -rf html; \
+        mv drupal html; \
+    else \
+        { \
+            echo '<!doctype html><html><head><title>Deployable Drupal Container!</title></head>'; \
+            echo '<body><p>You have reached the <strong>Deployable Drupal Container</strong> default index file.</body></html>'; \
+        } | tee /var/www/html/index.html; \
+        { \
+            echo '<?php print "<p>You have reached the <strong>Deployable Drupal Container</strong> default <i>PHP</i> index file."?>'; \
+        } | tee /var/www/html/index.php; \
+	fi;
 
 USER joesmith
 
