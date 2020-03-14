@@ -8,6 +8,7 @@ ARG PHP_VER=7.4.3
 ARG INSTALL_DRUPAL=0
 ARG DRUPAL_REF=8.8.2
 ARG DRUPAL_GIT=https://git.drupalcode.org/project/drupal.git
+ARG NGINX_SERVER_ROOT=/app
 
 FROM alpine:${ALPINE_VER}
 ARG ALPINE_DEV
@@ -20,6 +21,7 @@ ARG PHP_VER
 ARG DRUPAL_REF
 ARG DRUPAL_GIT
 ARG INSTALL_DRUPAL
+ARG NGINX_SERVER_ROOT
 
 # Apply stack smash protection to functions using local buffers and alloca()
 # Make PHP's main executable position-independent (improves ASLR security mechanism, and has no performance impact on x86_64)
@@ -30,7 +32,7 @@ ARG INSTALL_DRUPAL
 # -D_LARGEFILE_SOURCE and -D_FILE_OFFSET_BITS=64 (https://www.php.net/manual/en/intro.filesystem.php)
 
 ENV NGINX_VER=${NGINX_VER} \
-    APP_ROOT="/var/www/html" \
+    NGINX_SERVER_ROOT=${NGINX_SERVER_ROOT} \
     FILES_DIR="/mnt/files" \
     NGINX_VHOST_PRESET="html" \
     APK_MAIN=${APK_MAIN} \
@@ -249,7 +251,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
     mkdir -p /usr/share/nginx/modules; \
     \
     install -g joesmith -o joesmith -d \
-        "${APP_ROOT}" \
+        "${NGINX_SERVER_ROOT}" \
         "${FILES_DIR}" \
         /etc/nginx/conf.d \
         /var/cache/nginx \
@@ -279,7 +281,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 	apk add --no-cache --virtual .nginx-rundeps $runDeps; \
     \
     # Script to fix volumes permissions via sudo.
-    echo "find ${APP_ROOT} ${FILES_DIR} -maxdepth 0 -uid 0 -type d -exec chown joesmith:joesmith {} +" > /usr/local/bin/init_volumes; \
+    echo "find ${NGINX_SERVER_ROOT} ${FILES_DIR} -maxdepth 0 -uid 0 -type d -exec chown joesmith:joesmith {} +" > /usr/local/bin/init_volumes; \
     chmod +x /usr/local/bin/init_volumes; \
     \
     { \
@@ -377,8 +379,8 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
     addgroup -g 82 -S www-data; \
 	adduser -u 82 -D -S -G www-data www-data; \
 	mkdir -p "$PHP_INI_DIR/conf.d";  \
-    chown www-data:www-data /var/www/html; \
-	chmod 777 /var/www/html; \
+    chown www-data:www-data ${NGINX_SERVER_ROOT}; \
+	chmod 777 ${NGINX_SERVER_ROOT}; \
 	\
 	apk add --no-cache --virtual .fetch-deps gnupg; \
 	\
@@ -554,7 +556,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 
 USER joesmith
 
-WORKDIR $APP_ROOT
+WORKDIR $NGINX_SERVER_ROOT
 EXPOSE 80
 STOPSIGNAL SIGQUIT
 EXPOSE 9000
