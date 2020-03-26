@@ -10,7 +10,7 @@ PHP_URL ?= https://www.php.net/get/php-7.4.3.tar.xz/from/this/mirror
 PHP_ASC_URL ?= https://www.php.net/get/php-7.4.3.tar.xz.asc/from/this/mirror
 PHP_VER ?= 7.4.3
 INSTALL_DRUPAL ?= 0
-DRUPAL_REF ?= 8.8.2
+DRUPAL_REF ?= 8.8.3
 DRUPAL_GIT ?= https://git.drupalcode.org/project/drupal.git
 
 REPO = taz77/deployable-contained-drupal
@@ -31,7 +31,12 @@ endif
 default: build
 
 build:
-	git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} app; 
+	# git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} app;
+	if [ -n "$INSTALL_DRUPAL" ]; then \
+		composer create-project drupal/recommended-project app; \
+	else \
+	 git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} app; \
+	fi; \
 	docker build -t $(REPO):$(TAG) \
 		--build-arg NGINX_VER=$(NGINX_VER) \
 		--build-arg DRUPAL_REF=${DRUPAL_REF} \

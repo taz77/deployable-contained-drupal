@@ -8,7 +8,7 @@ ARG PHP_VER=7.4.3
 ARG INSTALL_DRUPAL=0
 ARG DRUPAL_REF=8.8.2
 ARG DRUPAL_GIT=https://git.drupalcode.org/project/drupal.git
-ARG NGINX_SERVER_ROOT=/app
+ARG NGINX_SERVER_ROOT=/app/web
 
 FROM alpine:${ALPINE_VER}
 ARG ALPINE_DEV
@@ -57,6 +57,7 @@ COPY templates /etc/gotpl/
 COPY docker-entrypoint.sh startup_wrapper.sh /
 COPY docker-php-source /usr/local/bin/
 COPY docker-php-ext-* /usr/local/bin/
+# COPY app /
     
 RUN  echo $APK_MAIN > /etc/apk/repositories; \
      echo $APK_COMMUNITY >> /etc/apk/repositories; \
