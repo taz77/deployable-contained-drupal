@@ -44,7 +44,7 @@ ENV NGINX_VER=${NGINX_VER} \
     PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" \
     PHP_CPPFLAGS="$PHP_CFLAGS" \
     PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie" \
-    PHP_SHA256="39daa533d5b63c3394da711dc12867dd76c2ec31c940bbba16f14e577df13d6f" \
+    PHP_SHA256="d059fd7f55bdc4d2eada15a00a2976697010d3631ef6f83149cc5289e1f23c2c" \
     PHP_MD5="" \
     PHP_EXTRA_CONFIGURE_ARGS="--enable-fpm --with-fpm-user=www-data --with-fpm-group=www-data --disable-cgi" \
     GPG_KEYS="42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312" \
@@ -57,7 +57,7 @@ COPY templates /etc/gotpl/
 COPY docker-entrypoint.sh startup_wrapper.sh /
 COPY docker-php-source /usr/local/bin/
 COPY docker-php-ext-* /usr/local/bin/
-# COPY app /
+COPY app /var/www/html
     
 RUN  echo $APK_MAIN > /etc/apk/repositories; \
      echo $APK_COMMUNITY >> /etc/apk/repositories; \
@@ -535,25 +535,7 @@ RUN  echo $APK_MAIN > /etc/apk/repositories; \
 		echo 'listen = 9000'; \
 	} | tee php-fpm.d/zz-docker.conf; \
     chown -R joesmith:joesmith ${PHP_INI_DIR}; \
-    chown -R joesmith:joesmith /usr/local/etc/php-fpm.d; \
-    ############################
-    #      Drupal Config       #
-    ############################
-
-	if [ -n "$INSTALL_DRUPAL" ]; then \
-		cd /var/www; \
-        git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} drupal; \
-        rm -rf html; \
-        mv drupal html; \
-    else \
-        { \
-            echo '<!doctype html><html><head><title>Deployable Drupal Container!</title></head>'; \
-            echo '<body><p>You have reached the <strong>Deployable Drupal Container</strong> default index file.</body></html>'; \
-        } | tee /var/www/html/index.html; \
-        { \
-            echo '<?php print "<p>You have reached the <strong>Deployable Drupal Container</strong> default <i>PHP</i> index file."?>'; \
-        } | tee /var/www/html/index.php; \
-	fi;
+    chown -R joesmith:joesmith /usr/local/etc/php-fpm.d;
 
 USER joesmith
 
@@ -562,6 +544,5 @@ EXPOSE 80
 STOPSIGNAL SIGQUIT
 EXPOSE 9000
 VOLUME [ "/var/www/html" ]
-
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/startup_wrapper.sh"]
