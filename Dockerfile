@@ -6,7 +6,7 @@ ARG PHP_URL=https://www.php.net/get/php-7.4.5.tar.xz/from/this/mirror
 ARG PHP_ASC_URL=https://www.php.net/get/php-7.4.5.tar.xz.asc/from/this/mirror
 ARG PHP_VER=7.4.3
 ARG INSTALL_DRUPAL=0
-ARG DRUPAL_REF=8.8.2
+ARG DRUPAL_REF=8.8.5
 ARG DRUPAL_GIT=https://git.drupalcode.org/project/drupal.git
 ARG NGINX_SERVER_ROOT=/app/web
 
