@@ -1,19 +1,18 @@
 -include env_make
 
 NGINX_VER ?= 1.17.8
-DRUPAL_REF ?= 8.8.2
+DRUPAL_REF ?= 8.8.5
 DRUPAL_GIT ?= https://git.drupalcode.org/project/drupal.git
 ALPINE_VER ?= 3.11
 APK_MAIN ?= http://dl-cdn.alpinelinux.org/alpine/v3.11/main
 APK_COMMUNITY ?= http://dl-cdn.alpinelinux.org/alpine/v3.11/community
-PHP_URL ?= https://www.php.net/get/php-7.4.3.tar.xz/from/this/mirror
-PHP_ASC_URL ?= https://www.php.net/get/php-7.4.3.tar.xz.asc/from/this/mirror
-PHP_VER ?= 7.4.3
-INSTALL_DRUPAL ?= 0
-DRUPAL_REF ?= 8.8.3
-DRUPAL_GIT ?= https://git.drupalcode.org/project/drupal.git
+PHP_URL ?= https://www.php.net/get/php-7.4.5.tar.xz/from/this/mirror
+PHP_ASC_URL ?= https://www.php.net/get/php-7.4.5.tar.xz.asc/from/this/mirror
+PHP_VER ?= 7.4.5
+INSTALL_DRUPAL ?= ""
+APPSOURCE ?= ""
 
-REPO = taz77/deployable-contained-drupal
+REPO = bowens/deployable-contained-drupal
 NAME = deployable-drupal-$(NGINX_VER)
 
 ifneq ($(STABILITY_TAG),)
@@ -31,12 +30,22 @@ endif
 default: build
 
 build:
-	# git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} app;
-	if [ -n "$INSTALL_DRUPAL" ]; then \
+	if [ ! -z ${INSTALL_DRUPAL} ]; then \
 		composer create-project drupal/recommended-project app; \
+	elif [ ! -z ${APPSOURCE} ]; then \
+		mkdir app; \
+		cp -a ${APPSOURCE} app/; \
 	else \
-	 git clone --branch ${DRUPAL_REF} ${DRUPAL_GIT} app; \
+			mkdir app; \
+	    { \
+	        echo '<!doctype html><html><head><title>Deployable Drupal Container!</title></head>'; \
+	        echo '<body><p>You have reached the <strong>Deployable Drupal Container</strong> default index file.</body></html>'; \
+	    } | tee app/index.html; \
+	    { \
+	        echo '<?php print "<p>You have reached the <strong>Deployable Drupal Container</strong> default <i>PHP</i> index file."?>'; \
+	    } | tee app/index.php; \
 	fi; \
+
 	docker build -t $(REPO):$(TAG) \
 		--build-arg NGINX_VER=$(NGINX_VER) \
 		--build-arg DRUPAL_REF=${DRUPAL_REF} \
