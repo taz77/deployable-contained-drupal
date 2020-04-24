@@ -57,7 +57,7 @@ COPY templates /etc/gotpl/
 COPY docker-entrypoint.sh startup_wrapper.sh /
 COPY docker-php-source /usr/local/bin/
 COPY docker-php-ext-* /usr/local/bin/
-COPY app /var/www/html
+COPY app /app
     
 RUN  echo $APK_MAIN > /etc/apk/repositories; \
      echo $APK_COMMUNITY >> /etc/apk/repositories; \
