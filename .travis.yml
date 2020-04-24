@@ -1,0 +1,21 @@
+language: bash
+
+services:
+- docker
+
+env:
+  matrix:
+  - ALPINE_VER=3.11.3 TAGS=3.11,3,latest
+
+script:
+- make && make test
+
+# after_success:
+# - . "${TRAVIS_BUILD_DIR}/release.sh"
+
+notifications:
+  email:
+    recipients:
+    - info@fastglass.net
+    on_success: never
+    on_failure: always
