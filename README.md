@@ -45,6 +45,17 @@ To deploy your own source code to this container set the variable `APPSOURCE` to
 
 If either of the above options are not provided then a generic html and php file is placed into the web director.
 
+## Runtime Environment Variables
+
+Much of the environment inside the container can be controlled with run-time enviornment variables. Nginx, PHP, and Drupal have templates that are manipulated by environment varialbes. The templates are applied during the entry point of the container.
+
+| Variable        | Value           |
+| ------------- |:-------------|
+| NGINX_MODSECURITY_ENABLED     | Enable Nginx Modsecurity |
+| NGINX_MODSECURITY_USE_OWASP_CRS | Enable Modsecurity OWASP core rule set |
+| NGINX_VHOST_PRESET      | Set to Drupal version: drupal7 or drupal8      |
+| NGINX_DRUPAL_HIDE_HEADERS | Hide headers for Drupal |
+
 ## Acknowledgement
 A lot of the code here was borrowed from the [Wodby project](https://github.com/wodby). They have some very well built base images that are highly configurable via environment
 files but their Nginx setup used PHP on a seperate container.
